@@ -1,0 +1,51 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.3.RELEASE'
+		tomcatVersion = "8.0.32"
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+// jarファイルの構築
+jar {
+    baseName = 'prtRemoto1'
+    version = '0.0.1-SNAPSHOT'
+}
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
+    
+    // https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring4
+    compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '2.1.4.RELEASE'
+    
+    // thymeleafはバージョンによってうまく動作しない（下記、3系バージョン）
+//   compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.3.RELEASE'
+//   compile("org.thymeleaf:thymeleaf-spring4");
+
+    // ./main/lib配下の全てのjarファイルをコンパイル時のクラスパスに追加
+    compile fileTree(dir: 'libOuter', includes: ['*.jar'])
+    
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
+    
+}

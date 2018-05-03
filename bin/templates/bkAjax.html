@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <title>Bootstrap Sample</title>
+    <!-- BootstrapのCSS読み込み -->
+    <link href="/lib/css/bootstrap.min.css" rel="stylesheet"></link>
+    <!-- jQuery読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- BootstrapのJS読み込み -->
+    <script src="/lib/js/bootstrap.min.js"></script>
+    <!-- thymeleafの読み込み -->
+    
+    <style type="text/css">
+      <!--
+      .readUnderLine { border-style: none none solid solid; 
+                 border-color: -moz-use-text-color -moz-use-text-color -moz-use-text-color #3399cc; 
+                 border-width: medium medium 1px 5px;
+                 padding: 5px 10px; 
+                 margin-bottom: 1em; 
+                 background-color: transparent;
+  
+      }
+      -->
+    </style>
+
+    <script>
+      //<![CDATA[
+      $(function() {
+          // Ajax通信テスト ボタンクリック
+          $('#formGetData').submit(function(event) {
+        	  alert("ajax");
+              // HTMLでの送信をキャンセル
+              event.preventDefault();
+              
+              // 操作対象のフォーム要素を取得
+              var $form = $(this);
+              
+              // outputDataを空に初期化
+              $("#output_data").text("");
+              $.ajax({
+                  url         : $form.attr('action'), //Formのアクションを取得して指定する
+            //      url         : '/sample/getTestData',
+            //    type        : 'POST',//Formのメソッドを取得して指定する
+                  type        : $form.attr('method'),//Formのメソッドを取得して指定する
+                  data        : $form.serialize(), //データにFormがserialzeした結果を入れる
+                  timeout     : 10000,  // 単位はミリ秒
+         //         url         : "/sample/getTestData",
+                  dataType    : 'json',
+                  
+//                   // 送信前
+//                   beforeSend: function(xhr, settings) {
+//                       // ボタンを無効化し、二重送信を防止
+//                       $button.attr('disabled', true);
+//                   },
+//                   // 応答後
+//                   complete: function(xhr, textStatus) {
+//                       // ボタンを有効化し、再送信を許可
+//                 	  $button.attr('disabled', false);
+//                   },
+                  
+                  success     : function(data) {
+                                  success(data);
+                              },
+                  error       : function(XMLHttpRequest, textStatus, errorThrown) {
+                                  error(XMLHttpRequest, textStatus, errorThrown);
+                              }
+              });
+          });
+      });
+         
+      // Ajax通信成功時処理
+      function success(data) {
+          alert("success:" + data);
+        //     $("#output_data").append("data[" + 0 + "]:" + data[0] + ";");
+        //     $("#output_data").append("data[" + 1 + "]:" + data[1] + ";");
+        //     $("#output_data").append("data[" + 2 + "]:" + data[2] + ";");
+        
+        // CDATAセクション をつかう（特別な記号として解釈されないように）
+          for (cnt = 0; cnt<data.length; cnt++) {
+              $("#output_data").append("data[" + cnt + "]:" + data[cnt] + ";");
+          }
+          $("#output_data2").append(data);
+      }
+        
+      // Ajax通信失敗時処理
+      function error(XMLHttpRequest, textStatus, errorThrown) {
+          alert("error:" + XMLHttpRequest);
+          alert("status:" + textStatus);
+          alert("errorThrown:" + errorThrown);
+      }
+        
+      //]]>
+    </script>
+
+</head>
+
+<body>
+  
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" />
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container jumbotron">
+  <h1>Web Answers 試作</h1>
+  <p>...</p>
+  
+  
+  
+  <!-- Forms
+      ================================================== -->
+
+      <form class="form-horizontal" id="formGetData" action="/sample/getTestData" method="post">
+        <fieldset>
+          <legend>質問を入力してください。</legend>
+          <div class="form-group">
+            <label for="InputText" class="col-sm-2 control-label">質問</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="InputText" placeholder="質問入力欄" ></input>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <div class="col-sm-10 col-lg-offset-2">
+              <button type="reset" class="btn btn-default">クリア</button>
+              <button type="submit" class="btn btn-primary" id="btnAnswer">回答を探す</button>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+      <h3 class="readUnderLine">
+        回答候補<br />
+        <small>回答候補の昇順に並べ替えてあります。</small>
+      </h3>
+      
+      <h4>質問タイプ： </h4>
+      <p th:text="'The time on the server is ' + ${serverTime} + '.'" /> 
+      
+      outputData：<span id="output_data"></span>
+      <br/><br/>
+      outputData2：<span id="output_data2"></span>
+      
+  
+  
+  
+  
+  
+</div>
+  
+  
+  
+  
+  
+  
+  
+  
+ 
+</body>
+
+</html>

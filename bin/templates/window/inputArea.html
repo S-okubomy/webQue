@@ -1,0 +1,28 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <form class="form-horizontal" id="formGetData" th:action="@{/webqa/getWebQAData}"
+          th:object="${indexForm}" method="post">
+        <fieldset>
+          <legend>質問を入力してください。</legend>
+          <div class="form-group">
+            <label for="InputText" class="control-label" style="margin:0 0 0 15px">質問</label>
+            <div class="col-sm-12">
+              <input type="text" class="form-control" id="inputQueText" placeholder="質問入力欄" 
+                     value = "" th:field="*{inputQueText}"></input>
+              <span th:if="${#fields.hasErrors('inputQueText')}" th:errors="*{inputQueText}"
+                    class="error-messages">error!</span>
+              <!-- 入力エラーがあれば、サーバ側でフラグを立て、ajax関数内で判定を行う -->
+              <input type="hidden" id="errorFlag" th:value="${hasErrorFlag}" />
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <div class="col-sm-12">
+              <button type="button" class="btn btn-default" id="inputClearBtn">クリア</button>
+              <button type="submit" class="btn btn-primary" id="btnAnswer">回答を探す</button>
+            </div>
+          </div>
+        </fieldset>
+    </form>
+</html>
+      

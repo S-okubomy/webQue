@@ -1,0 +1,126 @@
+/*--------------------
+ 吹き出しを作る
+--------------------*/
+/* 全体のスタイル */
+.kaiwa {
+  margin-bottom: 40px;
+  background-color:#f8f5f0;
+}
+/* 左画像 */
+.kaiwa-img-left {
+  margin: 0;
+  float: left;
+  width: 60px;
+  height: 60px;
+  margin-left: 5px;
+}
+/* 右画像 */
+.kaiwa-img-right {
+  margin: 0;
+  float: right;
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+}
+.kaiwa figure img {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #aaa;
+  border-radius: 50%;
+  margin: 0 0 0 7px;
+}
+/* 画像の下のテキスト */
+.kaiwa-img-description {
+  padding: 5px 0 0;
+  font-size: 10px;
+  text-align: center;
+}
+/* 左からの吹き出しテキスト */
+.kaiwa-text-right {
+  position: relative;
+  margin-left: 85px;
+  margin-right: 7px;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background-color: #feeda7;
+}
+
+/* 左からの吹き出しテキスト */
+.kaiwa-text-right2 {
+  position: relative;
+  margin-left: 85px;
+  margin-right: 7px;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background-color: #00ff80;
+}
+
+/* 右からの吹き出しテキスト */
+.kaiwa-text-left {
+  position: relative;
+  margin-right: 80px;
+  margin-left: 7px;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background-color: #00ff80;
+}
+
+p.kaiwa-text {
+  margin: 0 0 20px;
+}
+p.kaiwa-text:last-child {
+  margin-bottom: 0;
+}
+/* 左の三角形を作る */
+.kaiwa-text-right:before {
+  position: absolute;
+  content: '';
+  border: 10px solid transparent;
+  border-right: 10px solid #aaa;
+  top: 15px;
+  left: -20px;
+}
+.kaiwa-text-right:after {
+  position: absolute;
+  content: '';
+  border: 10px solid transparent;
+  border-right: 10px solid #feeda7;
+  top: 15px;
+  left: -19px;
+}
+
+.kaiwa-text-right2:after {
+  position: absolute;
+  content: '';
+  border: 10px solid transparent;
+  border-right: 10px solid #00ff80;
+  top: 15px;
+  left: -19px;
+}
+
+/* 右の三角形を作る */
+.kaiwa-text-left:before {
+  position: absolute;
+  content: '';
+  border: 10px solid transparent;
+  border-left: 10px solid #aaa;
+  top: 15px;
+  right: -20px;
+}
+.kaiwa-text-left:after {
+  position: absolute;
+  content: '';
+  border: 10px solid transparent;
+  border-left: 10px solid #00ff80;
+  top: 15px;
+  right: -19px;
+}
+/* 回り込み解除 */
+.kaiwa:after,.kaiwa:before {
+  clear: both;
+  content: "";
+  display: block;
+}

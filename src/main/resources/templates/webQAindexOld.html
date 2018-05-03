@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <title>Web QA System</title>
+    <!-- BootstrapのCSS読み込み -->
+    <link href="/lib/css/bootstrap.min.css" rel="stylesheet"></link>
+    <!-- jQuery読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- BootstrapのJS読み込み -->
+    <script src="/lib/js/bootstrap.min.js"></script>
+    <!-- thymeleafの読み込み -->
+    
+    <style type="text/css">
+      <!--
+      .readUnderLine { border-style: none none solid solid; 
+                 border-color: -moz-use-text-color -moz-use-text-color -moz-use-text-color #3399cc; 
+                 border-width: medium medium 1px 5px;
+                 padding: 5px 10px; 
+                 margin-bottom: 1em; 
+                 background-color: transparent;
+  
+      }
+      a.ansHtmlPath {
+                        color: blue;
+                        text-decoration:underline; 
+      }
+      .container-fluid.jumbotron{
+        margin-top: 2px;
+        margin-bottom: 2px;
+      }
+      
+      .navbar-default {
+         margin-bottom: 2px;
+      }
+      
+      .headerImg img {
+        width: 60px;
+        height: 60px;
+        margin-left: 5px;
+        border: 1px solid #aaa;
+        border-radius: 50%;
+        margin: 0 0 0 7px;
+      }
+      -->
+      
+    </style>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+
+    <script>
+      //<![CDATA[
+         
+         // ヘッダーの読み込み
+         $(function(){
+           $("#header-outer").load("/common/header.html #header-inner");
+         })
+                 
+      var timer1;
+                 
+      $(function() {
+          // Ajax通信テスト ボタンクリック（2回目以降、documentにイベントハンドラ追加されるので「(document).on(..」を使う）
+          $(document).on('submit', '#formGetData', function(event) {
+
+//          $('#formGetData').submit(function(event) {
+              // HTMLでの送信をキャンセル（2重送信防止）
+              event.preventDefault();
+              // 入力エラーを削除
+              $(".error-messages").text('');
+              
+              // プログレスバーを表示用
+              $('#modal_box').modal('show');
+              var count = 0;
+              progress(count);
+              
+              // 操作対象のフォーム要素を取得
+              var $form = $(this);
+              // 送信ボタンを取得
+              var $button = $form.find('button');
+              $.ajax({
+                  url         : $form.attr('action'), //Formのアクションを取得して指定する
+                  type        : $form.attr('method'),//Formのメソッドを取得して指定する
+                  data        : $form.serialize(), //データにFormがserialzeした結果を入れる
+                  timeout     : 60000,  // 単位はミリ秒
+                  dataType    : 'html',
+                  cache       : false,
+                  
+                  // 送信前
+                  beforeSend: function(xhr, settings) {
+                      // ボタンを無効化し、二重送信を防止
+                      $button.attr('disabled', true);
+                  },
+                  // 応答後
+                  complete: function(xhr, textStatus) {
+                      // ボタンを有効化し、再送信を許可
+                      $button.attr('disabled', false);
+                  },
+                  
+                  success     : function(data) {
+                                  success(data);
+                              },
+                  error       : function(XMLHttpRequest, textStatus, errorThrown) {
+                                  error(XMLHttpRequest, textStatus, errorThrown);
+                              }
+              });
+          });
+      });
+         
+      // Ajax通信成功時処理
+      function success(data) {
+          
+         clearTimeout(timer1); // タイマー 解除
+        
+         $("#pgss1").css({'width':'100%'});
+         $('#modal_box').modal('hide');
+         
+         var hasInputError = $(data).find('#errorFlag').val();
+         if (1 == hasInputError) {
+             // Ajaxで画面（INPUTエリアのみ更新）
+             $("#inputArea").html("");
+             $("#inputArea").html(data);
+         } else {
+             // Ajaxで画面（テーブルのみ更新）
+             $("#anserList").html("");
+             $("#anserList").html(data);
+         }
+      }
+        
+      // Ajax通信失敗時処理
+      function error(XMLHttpRequest, textStatus, errorThrown) {
+          clearTimeout(timer1); // タイマー 解除
+          $("#pgss1").css({'width':'100%'});
+          $('#modal_box').modal('hide');
+          
+          alert("error:" + XMLHttpRequest);
+          alert("status:" + textStatus);
+          alert("errorThrown:" + errorThrown);
+      }
+
+      $(function () {
+          $(document).on('click', '#inputClearBtn', function(event) {
+            // テキストボックスへ値を設定します
+            $("#inputQueText").val('');
+          });
+        });
+      
+      // プログレスバーを表示用
+      function progress(count){
+            timer1 = setTimeout(function(){ // タイマー 繰り返し
+            $("#pgss1").css({'width':count+'%'});
+            count=count+1;
+            if(count == 95) {
+                return;
+            }
+            progress(count);
+          },100);
+      }
+      
+      //]]>
+     </script>
+    </head>
+    
+    <body>
+      <div id="header-outer">
+        <!--ここにヘッダーをインクルード-->
+      </div>
+        
+        <!-- 内容 ================================================== -->
+        <div class="container-fluid jumbotron">
+          <div class="headerImg">
+            <img src="/img1/dog1.jpg" alt="dog1"/>
+          </div>
+          <h1>みんなの質問に答えるわん！！！ 試作</h1>
+          <p>...</p>
+          
+            <!-- Forms ================================================== -->
+            <div id = "inputArea"> <!-- Ajaxで画面更新1 START行 -->
+                  <form class="form-horizontal" id="formGetData" th:action="@{/webqa/getWebQAData}"
+                          th:object="${indexForm}" method="post">
+                    <fieldset>
+                      <legend>質問を入力してわん！！！</legend>
+                      <div class="form-group">
+                        <label for="InputText" class="control-label" style="margin:0 0 0 15px">質問</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" id="inputQueText" placeholder="（例）7月7日のうんちくは何ですか？" 
+                                 value = "" th:field="*{inputQueText}"></input>
+                          <span th:if="${#fields.hasErrors('inputQueText')}" th:errors="*{inputQueText}"
+                                class="error-messages">error!</span>
+                          <!-- 入力エラーがあれば、サーバ側でフラグを立て、ajax関数内で判定を行う -->
+                          <input type="hidden" id="errorFlag" th:value="${hasErrorFlag}" />
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <div class="col-sm-12">
+                          <button type="button" class="btn btn-default" id="inputClearBtn">クリア</button>
+                          <button type="submit" class="btn btn-primary" id="btnAnswer">回答を探す</button>
+                        </div>
+                      </div>
+                    </fieldset>
+                  </form>
+                  
+            </div> <!-- Ajaxで画面更新1 END行 -->
+            <h3 class="readUnderLine">回答候補だわん<br />
+            <small>回答候補の昇順に並べ替えてあります。</small>
+            </h3>
+            
+            <p th:text="'The time on the server is ' + ${serverTime} + '.'" />
+              
+            <div id = "anserList"> <!-- Ajaxで画面更新2 START行-->
+              <h4>質問タイプ： </h4>
+              <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th>質問分類</th>
+                    <th>fx</th>
+                    <th>文章:</th>
+                </tr>
+                <tr th:each="resultQueType : ${resultQADto.resultQueTypeList}">
+                    <td th:text="${resultQueType.ansBunrui}"></td>
+                    <td th:text="${#numbers.formatDecimal(resultQueType.fxValue,1,2,'DEFAULT')}"></td>
+                    <td th:text="${resultQueType.ansSentence}"></td>
+                </tr>
+              </table>
+              
+              <h4>回答： </h4>
+              <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th>回答分類</th>
+                    <th>fx</th>
+                    <th>文章:</th>
+                </tr>
+                <tr th:each="resultAns : ${resultQADto.resultAnsList}">
+                    <td th:text="${resultAns.ansBunrui}"></td>
+                    <td th:text="${#numbers.formatDecimal(resultAns.fxValue,1,2,'DEFAULT')}"></td>
+                    <td><a class="ansHtmlPath" href="" th:href="@{${resultAns.htmlPath}}" target="_blank"
+                          th:text="${resultAns.ansSentence}">NODATA</a></td>
+                </tr>
+              </table>
+            </div> <!-- Ajaxで画面更新2 END行-->
+        </div>
+        
+<!-- 広告用 -->
+        <a href="https://px.a8.net/svt/ejp?a8mat=2C0EMO+8EG8UY+50+2HK0TD" target="_blank" rel="nofollow">
+        <img border="0" width="350" height="80" alt="" src="https://www22.a8.net/svt/bgt?aid=141106704508&amp;wid=002&amp;eno=01&amp;mid=s00000000018015042000&amp;mc=1"></img></a>
+        <img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=2C0EMO+8EG8UY+50+2HK0TD" alt=""></img>
+        
+        <!-- プログレスバーを表示するモーダル -->
+        <div class="modal fade" id="modal_box" data-target="#modal_box" data-backdrop="static">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title"> 回答作成中です。しばらくお待ちください。。。</h4>
+              </div>
+              <div class="modal-body">
+                <div class="progress progress-striped active">
+                  <div class="progress-bar progress-bar-info" id="pgss1"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+    </body>
+</html>

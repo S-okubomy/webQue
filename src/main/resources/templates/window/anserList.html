@@ -1,0 +1,77 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+      <h3 class="readUnderLine">回答候補だわん<br />
+      <small>回答候補の昇順に並べ替えてあります。</small>
+      </h3>
+      <!-- <p th:text="'The time on the server is ' + ${serverTime} + '.'" /> -->
+      
+      <!--左からの吹き出し-->
+      <div class="kaiwa">
+         <figure class="kaiwa-img-left">
+           <img src="/img1/dog1.jpg" alt="dog1"/>
+         <figcaption class="kaiwa-img-description">質問するワン</figcaption>
+         </figure>
+         <div class="kaiwa-text-right2">
+           <!--検索結果が見つかった（リストサイズが0より大きい場合）-->
+           <th:block th:if="${#lists.size(resultQADto.resultAnsList)}>0" >
+                <P class="kaiwa-text"><font size="3">インターネットで調べたら下記の回答見つかったわん</font></P>
+                <P th:each="resultAns : ${resultQADto.resultAnsList}" class="kaiwa-text"><font size="3">「
+                    <a class="ansHtmlPath" href="" th:href="@{${resultAns.htmlPath}}" target="_blank"
+                          th:text="${resultAns.ansSentence}">NODATA</a>」が見つかったわん
+                </font></P>
+                <P class="kaiwa-text"><font size="3">青い文字クリックすると掲載ページ見れるよ。</font></P>
+           </th:block>
+           
+           <!--検索結果が0件の場合-->
+           <th:block th:unless="${#lists.size(resultQADto.resultAnsList)}>0" >
+                <P class="kaiwa-text"><font size="3">インターネットで調べたんだけど、回答見つからなかったわん！！</font></P>
+                <P class="kaiwa-text"><font size="3">検索キーワードかえてみて。だめだったら、サーバー混雑してるかもしれないから後で試してみて。</font></P>
+           </th:block>
+         </div>
+      </div>
+
+
+      <!--アコーディオン-->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+              <span class="glyphicon glyphicon-flag text-info"></span><strong>回答結果の詳細はこちら</strong>
+              <span class="glyphicon glyphicon-collapse-down pull-right"></span>
+            </a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse">
+              <h4>質問タイプ： </h4>
+                <table class="table table-striped table-bordered table-condensed">
+                    <tr>
+                        <th>質問分類</th>
+                        <th>fx</th>
+                        <th>文章:</th>
+                    </tr>
+                    <tr th:each="resultQueType : ${resultQADto.resultQueTypeList}">
+                        <td th:text="${resultQueType.ansBunrui}"></td>
+                        <td th:text="${#numbers.formatDecimal(resultQueType.fxValue,1,2,'DEFAULT')}"></td>
+                        <td th:text="${resultQueType.ansSentence}"></td>
+                    </tr>
+                </table>
+                
+                <h4>回答： </h4>
+                <table class="table table-striped table-bordered table-condensed">
+                    <tr>
+                        <th>回答分類</th>
+                        <th>fx</th>
+                        <th>文章:</th>
+                    </tr>
+                    <tr th:each="resultAns : ${resultQADto.resultAnsList}">
+                        <td th:text="${resultAns.ansBunrui}"></td>
+                        <td th:text="${#numbers.formatDecimal(resultAns.fxValue,1,2,'DEFAULT')}"></td>
+                        <td><a class="ansHtmlPath" href="" th:href="@{${resultAns.htmlPath}}" target="_blank"
+                                      th:text="${resultAns.ansSentence}">NODATA</a></td>
+                    </tr>
+                </table>
+        </div>
+      </div>
+
+</html>
+      

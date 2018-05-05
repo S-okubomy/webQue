@@ -2,7 +2,15 @@ package com.app.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.app.dto.PredictDto;
 
 import static com.app.util.GetHinshiUtil.HINSHI_NOTUSE_NETINFO;
 
@@ -126,9 +134,6 @@ public class SelectWordUtil {
 	    return false;
 	}
 	
-	
-
-
 	/**
 	 * strがnullもしくは空文字であればtrueを返す
 	 * @param str

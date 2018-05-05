@@ -4,7 +4,12 @@ import java.io.Serializable;
 
 public class AnsModelDto implements Serializable {
 
-	public AnsModelDto() {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public AnsModelDto() {
 	}
 
 	/** 応答No */

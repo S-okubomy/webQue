@@ -1,36 +1,35 @@
 package com.app.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.dto.AnsModelDto;
+import com.app.dto.PredictDto;
 import com.app.dto.ResultQAModelDto;
 import com.app.form.IndexForm;
 import com.app.service.CreateInfoService;
 import com.app.service.WebIndependExeService;
 import com.app.service.WebQAExeService;
-
-import org.springframework.stereotype.Controller;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.app.unit.EinsVisonUnit;
 
 @Controller
 @EnableAutoConfiguration
@@ -51,31 +50,7 @@ public class WebQaSysProtoController
         return new IndexForm();
     }
     
-    
     private static final Logger logger = LoggerFactory.getLogger(WebQaSysProtoController.class);
-    
-    /**
-     * Json テストデータの配列を返却する。
-     */
-    @RequestMapping(value = "getWebQAJsonData", method = RequestMethod.POST)
-    @ResponseBody
-    public String[] getWebQAJsonData(Locale locale, @Validated IndexForm indexForm
-            , BindingResult result, Model model) {
-        
-        if (result.hasErrors()) {
-            model.addAttribute("hasErrorFlag", "1");
-            return null;
-        }
-        
-        IndexForm index = new IndexForm();
-        BeanUtils.copyProperties(indexForm, index);
-        
-        // ログを出力する
-        logger.info("call getWebQAData");
-        String[] datas = {"test1", "test2", "test3"};
-     
-        return datas;
-    }
     
     /**
      * テストデータの配列を返却する。
@@ -89,7 +64,6 @@ public class WebQaSysProtoController
             model.addAttribute("hasErrorFlag", "1");
             return inputArea(locale, model);
         }
-        
         // ログを出力する
         logger.info("call getWebQAData");
         
@@ -99,7 +73,7 @@ public class WebQaSysProtoController
         question[0] = index.getInputQueText();
         ResultQAModelDto resultQADto = webQAExeService.getWebQA(question);
         model.addAttribute("resultQADto", resultQADto);
-     
+        
         Date date = new Date();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
         String formattedDate = dateFormat.format(date);
@@ -111,10 +85,54 @@ public class WebQaSysProtoController
     }
     
     /**
+     * テストデータの配列を返却する。
+     * @throws Exception 
+     */
+    @RequestMapping(value = "getWebQAPic", method = RequestMethod.POST)
+    public String getWebQAPic(Locale locale, @Validated IndexForm indexForm
+            , BindingResult result, Model model) throws Exception {
+        
+        if (result.hasErrors()) {
+            model.addAttribute("hasErrorFlag", "1");
+            return inputArea(locale, model);
+        }
+        
+        // ログを出力する
+        logger.info("call getWebQApic");
+        
+        IndexForm index = new IndexForm();
+        BeanUtils.copyProperties(indexForm, index);
+        String[] question = new String[1];
+        question[0] = index.getInputQueText();
+        ResultQAModelDto resultQADto = webQAExeService.getWebQA(question);
+        model.addAttribute("resultQADto", resultQADto);
+        
+        // 画像データを取得（API）
+        List<PredictDto> imgSelectedList = new ArrayList<PredictDto>();
+        if (resultQADto.getResultAnsList() != null && 0 < resultQADto.getResultAnsList().size()) {
+            EinsVisonUnit einsVisonUnit = new EinsVisonUnit();
+            List<PredictDto> imgInfoList = einsVisonUnit.getPredictList(resultQADto.getResultAnsList()
+                    .get(0).getHtmlPath());
+            imgSelectedList = EinsVisonUnit.getSelectedImgList(imgInfoList);
+        }
+        model.addAttribute("resultPicList", imgSelectedList);
+        
+        Date date = new Date();
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+        String formattedDate = dateFormat.format(date);
+        model.addAttribute("serverTime", formattedDate );
+        
+        model.addAttribute("hasErrorFlag", "0");
+
+        return "window/anserListPic";
+    }
+    
+    /**
      * Simply selects the home view to render by returning its name.
+     * @throws Exception 
      */
     @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public String index(Locale locale, IndexForm indexForm, Model model) {
+    public String index(Locale locale, IndexForm indexForm, Model model) throws Exception {
         logger.info("Welcome home! The client locale is {}.", locale);
         
         Date date = new Date();
@@ -126,30 +144,6 @@ public class WebQaSysProtoController
         model.addAttribute("serverTime", formattedDate );
         
         return "webQAindex";
-    }
-    
-    @RequestMapping(value = "/indexOld", method = RequestMethod.GET)
-    public String indexOld(Locale locale, IndexForm indexForm, Model model) {
-        logger.info("Welcome home! The client locale is {}.", locale);
-        
-//        TimeZone tzn = TimeZone.getTimeZone("Asia/Tokyo");
-//        SimpleDateFormat fmt = new SimpleDateFormat();
-//        fmt.setTimeZone(tzn);
-//        Date datet = new Date();
-//        fmt.format(datet);
-        
-        // 日付型を日本時間にする。
-        ZonedDateTime nowZonedDt = ZonedDateTime.now(ZoneId.of("Asia/Tokyo"));
-        Date dateJp = Date.from(nowZonedDt.toInstant());
-        
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-        String fmtJpDate = fmt.format(dateJp);
-        model.addAttribute("serverTime", fmtJpDate);
-        
-        ResultQAModelDto resultQADto = new ResultQAModelDto();
-        model.addAttribute("resultQADto", resultQADto);
-        
-        return "webQAindexOld";
     }
     
     private String inputArea(Locale locale, Model model) {

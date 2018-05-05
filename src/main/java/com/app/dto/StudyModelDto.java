@@ -4,7 +4,12 @@ import java.io.Serializable;
 
 public class StudyModelDto implements Serializable {
 
-	public StudyModelDto() {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public StudyModelDto() {
 	}
 
 	/** 学習No */

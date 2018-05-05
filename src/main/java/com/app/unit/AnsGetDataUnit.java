@@ -48,8 +48,6 @@ public class AnsGetDataUnit {
 	    
 		//データ取得先 URL指定
 	    String reqUrl = "http://www.google.com/search?q=";
-        
-//	    String splitSerchWord = SelectWordUtil.getSplitWord(args[0]);
 	    String splitSerchWord = args[0];
 	    
         String reqUrlAll = reqUrl + splitSerchWord + "&ie=UTF-8&oe=UTF-8&num=20";
@@ -58,7 +56,6 @@ public class AnsGetDataUnit {
         
         long startHtml = System.currentTimeMillis();
         studyHtmlList = GetNetInfoUtil.getHtmlListForGoogle(reqUrlAll);
-
 		System.out.println("以下、検索元URL");
 		System.out.println(reqUrlAll);
 		System.out.println("以下、URLリスト（検索結果）");
@@ -68,8 +65,6 @@ public class AnsGetDataUnit {
 		
         // Projectのトップディレクトリパス取得
         String folderName = System.getProperty("user.dir");
-        // OSによりパスの区切り文字を設定する。
-//        String fs = File.separator;
         
         // トップディレクトリパス以降を設定
         String inputFolderName = folderName + "/src/main/resources/inputFile/";
@@ -238,9 +233,8 @@ public class AnsGetDataUnit {
 	 * @return
 	 * @throws Exception
 	 */
-	private String[] getSujoVector(LinkedHashMap<String,String[]> soseiVecterSakuseiMap, String strNetInfo) throws Exception {
-
-
+	private String[] getSujoVector(LinkedHashMap<String,String[]> soseiVecterSakuseiMap, String strNetInfo)
+	        throws Exception {
         // この3行で解析できる
         StringTagger tagger = SenFactory.getStringTagger(null);
         List<Token> tokens = new ArrayList<Token>();
@@ -416,9 +410,7 @@ public class AnsGetDataUnit {
         
         @Override
         public int compare(AnsModelDto ansModel1, AnsModelDto ansModel2) {
-            
             // compareメソッド : 引数1=引数2→0、引数1<引数2→-1、引数1>引数2→1
-            
             // 降順
             return DESC * Double.compare(ansModel1.getFxValue(), ansModel2.getFxValue());
         }

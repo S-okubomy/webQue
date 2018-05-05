@@ -23,6 +23,10 @@ public class InitDto implements Serializable {
 //	public static final double[] maxA 
 //       = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     // 変数の最小値
     public static final double[] minA 
        = {-500.0};

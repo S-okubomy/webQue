@@ -5,7 +5,12 @@ import java.util.List;
 
 public class ResultQAModelDto implements Serializable {
 
-	public ResultQAModelDto() {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public ResultQAModelDto() {
 	}
 
 	/** 質問タイプ結果リスト */

@@ -18,6 +18,8 @@ import com.winkelmeyer.salesforce.einsteinvision.model.PredictionResult;
 
 public class EinsVisonUnit {
     
+    public static final int resultKensuAns = 10;
+    
     private String getToken(){
         // For Heroku users
         Optional<String> accountIdOpt = Optional
@@ -47,14 +49,21 @@ public class EinsVisonUnit {
         List<String> urlListForImg = GetNetInfoUtil.getUrlListForImg(htmlUrl);
         List<PredictDto> imgInfoList = new ArrayList<PredictDto>();
         if (0 < urlListForImg.size()) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < urlListForImg.size(); i++) {
                 try {
+                    System.out.println("URI : " + urlListForImg.get(i));
                     PredictionResult resultImg = predictionService.predictUrl(
                             "SceneClassifier", urlListForImg.get(i), "");
                     PredictDto predictDto = new PredictDto();
                     predictDto.setPredictionResult(resultImg);
                     predictDto.setUrlForImg(urlListForImg.get(i));
                     imgInfoList.add(predictDto);
+                    
+                    // 上限件数 以上 ならbreak
+                    if (resultKensuAns -1 <= i) {
+                        break;
+                    }
+                    
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
@@ -67,18 +76,21 @@ public class EinsVisonUnit {
     
     public static List<String> countWord(List<PredictDto> predictDtoList){
         Map<String, Integer> map = new HashMap<>();
+        List<String> list = new ArrayList<>();
         for (PredictDto predictDto : predictDtoList) {
-            String word = predictDto.getPredictionResult().getProbabilities().get(0).getLabel();
-            if (!word.isEmpty()) {
-                if (map.containsKey(word)) {
-                    int count = map.get(word) + 1;
-                    map.put(word, count);
-                } else {
-                    map.put(word, 1);
+            if (null != predictDto.getPredictionResult()) {
+                String word = predictDto.getPredictionResult().getProbabilities().get(0).getLabel();
+                if (null != word && !word.isEmpty()) {
+                    if (map.containsKey(word)) {
+                        int count = map.get(word) + 1;
+                        map.put(word, count);
+                    } else {
+                        map.put(word, 1);
+                    }
                 }
             }
         }
-        List<String> list = new ArrayList<>();
+        
         for (String key : map.keySet()) {
             list.add(key);
         }
@@ -104,12 +116,14 @@ public class EinsVisonUnit {
         List<String> selectedLabel = countWord(imgInfoList);
         List<PredictDto> selectedPredictList = new ArrayList<PredictDto>();
         for (PredictDto imgInfo : imgInfoList) {
-            String label = imgInfo.getPredictionResult().getProbabilities().get(0).getLabel();
-            float probability = imgInfo.getPredictionResult().getProbabilities().get(0).getProbability();
-            String url = imgInfo.getUrlForImg();
-            if (selectedLabel.contains(label)) {
-                selectedPredictList.add(imgInfo);
-                System.out.println(label + " : " + probability + " : " + url);
+            if (null != imgInfo.getPredictionResult()) {
+                String label = imgInfo.getPredictionResult().getProbabilities().get(0).getLabel();
+                float probability = imgInfo.getPredictionResult().getProbabilities().get(0).getProbability();
+                String url = imgInfo.getUrlForImg();
+                if (selectedLabel.contains(label)) {
+                    selectedPredictList.add(imgInfo);
+                    System.out.println(label + " : " + probability + " : " + url);
+                }
             }
         }
         return selectedPredictList;

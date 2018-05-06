@@ -100,15 +100,23 @@ public class EinsVisonUnit {
  
         System.out.println("出現回数");
         String format = "%-" + 10 + "s: %3d";
+        List<String> listRt = new ArrayList<>();
+        int cnt = 0;
         for (String word : list) {
+            cnt++;
+            listRt.add(word);
             int count = map.get(word);
             if (1 <= count) {
                 System.out.printf(format, word, count);
                 System.out.println();
             }
+            // 上限件数 以上 ならbreak
+            if (3 <= cnt) {
+                break;
+            }
         }
         
-        return list;
+        return listRt;
     }
     
     public static List<PredictDto> getSelectedImgList(List<PredictDto> imgInfoList) {

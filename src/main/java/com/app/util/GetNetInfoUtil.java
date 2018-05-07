@@ -135,7 +135,7 @@ public class GetNetInfoUtil {
             Document document = Jsoup.connect(reqUrl)
                     .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0")
                     .get();
-            Elements elementPs = document.select("img");  // <h3 class="r">中の<a>要素を取得
+            Elements elementPs = document.select("body img");  // <h3 class="r">中の<a>要素を取得
             String preUrl = reqUrl.replace("http://google.com/url?q=", "");
             String urlPreHead = SelectWordUtil.selectWord(preUrl, "", "://"); 
             String urlHead = urlPreHead +  "://" + SelectWordUtil.selectWord(preUrl

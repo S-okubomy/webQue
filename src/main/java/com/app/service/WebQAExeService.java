@@ -39,7 +39,7 @@ public class WebQAExeService {
         // ================= ネット検索して回答作成  =================
         AnsGetDataUnit ansGetJitsuDate = new AnsGetDataUnit();
         // 回答結果を取得（判定結果の降順に格納）
-        List<AnsModelDto> ansList = ansGetJitsuDate.getJitsuDate(question);
+        List<AnsModelDto> ansList = ansGetJitsuDate.getJitsuDate(question, queTypeList.get(0).getAnsBunrui());
         // 回答結果を上限件数分、格納
         List<AnsModelDto> resultAnsList = getResultAnsList(resultQueTypeList, ansList);
         // 最終結果（回答結果リスト）を格納する。

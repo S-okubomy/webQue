@@ -1,22 +1,15 @@
 package com.app.unit;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
-import net.java.sen.SenFactory;
-import net.java.sen.StringTagger;
-import net.java.sen.dictionary.Token;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -24,11 +17,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import com.app.dto.AnsModelDto;
-import com.app.dto.InitDto;
 import com.app.dto.StudyModelDto;
 import com.app.util.GetNetInfoUtil;
 import com.app.util.ReadFileUtil;
 import com.app.util.SelectWordUtil;
+
+import net.java.sen.SenFactory;
+import net.java.sen.StringTagger;
+import net.java.sen.dictionary.Token;
 
 /**
  * GAの学習結果より、ネットから情報を収集する
@@ -42,7 +38,7 @@ public class AnsGetDataUnit {
 	private static final int maxHtmlListSize = 5;
 	
 
-	public List<AnsModelDto> getJitsuDate(String[] args) throws Exception {
+	public List<AnsModelDto> getJitsuDate(String[] args, String queType) throws Exception {
 
 	    long startAns = System.currentTimeMillis();
 	    
@@ -68,7 +64,6 @@ public class AnsGetDataUnit {
         
         // トップディレクトリパス以降を設定
         String inputFolderName = folderName + "/src/main/resources/inputFile/";
-        String outputFolderName = folderName + "/src/main/resources/outputFile/";
 
 		//重み係数の読み込み
 		String csvWeightValueFileInput = inputFolderName + "ans_outWeightValue.csv";
@@ -82,10 +77,6 @@ public class AnsGetDataUnit {
 		//素性ベクトル作成用
 		String soseiVecterSakusei = inputFolderName + "ans_studyInput.txt";
 		LinkedHashMap<String,String[]> soseiVecterSakuseiMap = ReadFileUtil.readCsvCom(soseiVecterSakusei);
-
-		//出力ファイル
-		String strOutputFile = outputFolderName + "outputJitsuForAns.txt";
-		BufferedWriter newFileStream = new BufferedWriter(new FileWriter(strOutputFile));
 		
         long endHtml = System.currentTimeMillis();
         long intervalHtml = endHtml - startHtml;
@@ -108,7 +99,7 @@ public class AnsGetDataUnit {
     				    
     				    long start = System.currentTimeMillis();
     					Document document = Jsoup.connect(studyHtml).get();
-    					Elements elementP = document.select("p");
+    					Elements elementP = document.select("Body div p");
     					long end = System.currentTimeMillis();
     					long interval = end - start;
     					System.out.println(interval + "ミリ秒  Jsop");
@@ -119,14 +110,18 @@ public class AnsGetDataUnit {
     					for (int iCount =0; iCount < rsltNetInfo.length; iCount++) {
     					    // 正規表現でフィルター（文章の前後にスペースを含む行を除く    "^\\x01-\\x7E"で1バイト文字以外を探す）
     					    // 5文字以上、上記以外の文章を対象にする。
-    					    if (15 <= rsltNetInfo[iCount].length() && !rsltNetInfo[iCount]
-    					            .matches(".*([a-zA-Z0-9]|[^\\x01-\\x7E]).*\\ ([a-zA-Z0-9]|[^\\x01-\\x7E]).*")
+    					    if (15 <= rsltNetInfo[iCount].length() && rsltNetInfo[iCount].length() <= 150 
+    					            && !rsltNetInfo[iCount].matches(".*([a-zA-Z0-9]|[^\\x01-\\x7E]).*\\ ([a-zA-Z0-9]|[^\\x01-\\x7E]).*")
     					            && !rsltNetInfo[iCount].matches(".*([a-zA-Z0-9/%\\-_:=?]{10,}).*")
     					            && !rsltNetInfo[iCount].matches(".*「追加する」ボタンを押してください.*")) {
                                 sujoVector = getSujoVector(soseiVecterSakuseiMap, rsltNetInfo[iCount]);
                                 // 振り分け結果を出力
                                 outFuriwakeResult(sujoVector, weightValueMap, gaResultArray
-                                        , rsltNetInfo[iCount], newFileStream, ansModelList, studyHtml);
+                                        , rsltNetInfo[iCount], ansModelList, studyHtml, queType);
+    					    }
+// TODO 時間短縮 検討
+    					    if (500 <= iCount -1) {
+    					        break;
     					    }
     					}
     					cntHtmlList++;
@@ -147,23 +142,15 @@ public class AnsGetDataUnit {
 		            System.out.println("1検索 失敗: " + e.getMessage());
 		        } 
 			}
+			Collections.sort(ansModelList, new SortAnsModelList());
+            System.out.println("回答抽出完了");
+            long endAns = System.currentTimeMillis();
+            long intervalAns = endAns - startAns;
+            System.out.println(intervalAns + "ミリ秒  Ans");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("全件 失敗: " + e.getMessage());
         } finally {
-            try {
-                // ストリームは必ず finally で close
-                if (newFileStream != null) {
-                    newFileStream.close();
-                    Collections.sort(ansModelList, new SortAnsModelList());
-                    System.out.println("回答抽出完了");
-                    long endAns = System.currentTimeMillis();
-                    long intervalAns = endAns - startAns;
-                    System.out.println(intervalAns + "ミリ秒  Ans");
-                    return ansModelList;
-                }
-            } catch (IOException e) {
-            }
         }
 
 		return ansModelList;
@@ -180,12 +167,13 @@ public class AnsGetDataUnit {
 	 */
 	private void outFuriwakeResult(String[] sujoVector
 	        , LinkedHashMap<String,String[]> weightValueMap, String[] gaResultArray
-	        , String rsltSentence, BufferedWriter newFileStream
-	        , List<AnsModelDto> ansModelList, String htmlPath) throws IOException {
+	        , String rsltSentence
+	        , List<AnsModelDto> ansModelList, String htmlPath, String queType) throws IOException {
         // 振り分け結果を出力
         for (String key : weightValueMap.keySet()) {
             // タイトルラベルは読み飛ばす
-            if ("質問分類".equals(weightValueMap.get(key)[0])) {
+            if ("質問分類".equals(weightValueMap.get(key)[0]) 
+                    || !queType.equals(weightValueMap.get(key)[0])) {
                 continue;
             }
             
@@ -200,14 +188,6 @@ public class AnsGetDataUnit {
            
            if (SEIKAI.equals(studyModelDto.getHanteiJoho()) 
                    && studyModelDto.getFxValue() > 5.0) {
-               //ファイルへの書き込み
-//               System.out.println("該当あり    回答分類: " + weightValueMap.get(key)[0] + " fx= " + studyModelDto.getFxValue() 
-//                                   + " 文章: " + rsltSentence);
-               //ファイルへの書き込み
-               newFileStream.write(rsltSentence);
-               newFileStream.newLine();
-               newFileStream.flush();
-               
                // 回答結果をListに格納
                AnsModelDto ansModelDto = new AnsModelDto();
                ansModelDto.setHanteiJoho(studyModelDto.getHanteiJoho());
@@ -216,10 +196,6 @@ public class AnsGetDataUnit {
                ansModelDto.setAnsSentence(rsltSentence);
                ansModelDto.setHtmlPath(htmlPath);
                ansModelList.add(ansModelDto);
-               
-           } else {
-//               System.out.println("該当 なし   回答分類: " + weightValueMap.get(key)[0] + " fx= " + studyModelDto.getFxValue()
-//                                   + " 文章: " + rsltSentence);
            }
        }
 	}

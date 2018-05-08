@@ -1,7 +1,5 @@
 package com.app.unit;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -199,9 +197,8 @@ public class AnsGetDataUnit {
            }
        }
 	}
-	
-	
 
+	
 	/**
 	 * 素性ベクトルを返す
 	 * @param soseiVecterSakuseiMap
@@ -210,6 +207,114 @@ public class AnsGetDataUnit {
 	 * @throws Exception
 	 */
 	private String[] getSujoVector(LinkedHashMap<String,String[]> soseiVecterSakuseiMap, String strNetInfo)
+	        throws Exception {
+        // この3行で解析できる
+        StringTagger tagger = SenFactory.getStringTagger(null);
+        List<Token> tokens = new ArrayList<Token>();
+
+        StringBuilder oneGramTitle = new StringBuilder();
+        StringBuilder twoGramTitle = new StringBuilder();
+        StringBuilder tangoHinshi = new StringBuilder();
+        for (String key : soseiVecterSakuseiMap.keySet()) {
+            String studyLine = soseiVecterSakuseiMap.get(key)[3];
+            tagger.analyze(studyLine, tokens);
+            for (int i = 0; i < tokens.size(); i++) {
+                // 1-gram
+                oneGramTitle.append(tokens.get(i).getSurface() + ",");
+                // 2-gram
+                if (i < tokens.size() -1) {
+                    // 2-gram（単語）
+                    twoGramTitle.append(tokens.get(i).getSurface()); // 1単語目の出力
+                    twoGramTitle.append(tokens.get(i + 1).getSurface() + ","); // 連結 2単語目の出力
+                    // 2-gram（単語/品詞）
+                    tangoHinshi.append(tokens.get(i).getSurface());  // 1単語目の出力
+                    tangoHinshi.append("/");
+                    tangoHinshi.append(SelectWordUtil.selectWord(tokens.get(i+1).getMorpheme().getPartOfSpeech(), "", "-") + ",");  // 連結 2単語目の出力
+                }
+            }
+        }
+
+        // 以下、素性ベクトル作成
+        String[] tmpOneGramTitle = oneGramTitle.toString().split(",");
+        String[] tmpTwoGramTitle = twoGramTitle.toString().split(",");
+        String[] tmpTangoHinshiGramTitle = tangoHinshi.toString().split(",");
+        StringBuilder tmpRenketsu;
+        String studyLine = strNetInfo;
+        tagger.analyze(studyLine, tokens);
+
+        boolean isVectorFlag;
+        //1gram チェック
+        StringBuilder oneGramSujoVector = new StringBuilder();
+        for (String oneGram : tmpOneGramTitle) {
+            isVectorFlag = false;
+            for (Token token : tokens) {
+                if (oneGram.equals(token.getSurface())) {
+                    oneGramSujoVector.append("1,");
+                    isVectorFlag = true;
+                    break;
+                }
+            }
+            if (!isVectorFlag) {
+                oneGramSujoVector.append("0,");
+            }
+        }
+
+        //2gram チェック
+        StringBuilder twoGramSujoVector = new StringBuilder();
+        for (String twoGram : tmpTwoGramTitle) {
+            isVectorFlag = false;
+            for (int i = 0; i < tokens.size() -1; i++) {
+                tmpRenketsu = new StringBuilder();
+                tmpRenketsu.append(tokens.get(i).getSurface()); // 1単語目の出力
+                tmpRenketsu.append(tokens.get(i + 1).getSurface()); // 連結 2単語目の出力
+                if (twoGram.equals(tmpRenketsu.toString())) {
+                    twoGramSujoVector.append("1,");
+                    isVectorFlag = true;
+                    break;
+                }
+            }
+            if (!isVectorFlag) {
+                twoGramSujoVector.append("0,");
+            }
+        }
+
+        //2-gram（単語/品詞）
+        StringBuilder tangoHinshiSujoVector = new StringBuilder();
+        for (String TangoHinshiGram : tmpTangoHinshiGramTitle) {
+            isVectorFlag = false;
+            for (int i = 0; i < tokens.size() -1; i++) {
+                tmpRenketsu = new StringBuilder();
+                tmpRenketsu.append(tokens.get(i).getSurface()); // 1単語目の出力
+                tmpRenketsu.append("/");
+                tmpRenketsu.append(SelectWordUtil.selectWord(tokens.get(i+1).getMorpheme().getPartOfSpeech(), "", "-"));  // 連結 2単語目の出力
+                if (TangoHinshiGram.equals(tmpRenketsu.toString())) {
+                    tangoHinshiSujoVector.append("1,");
+                    isVectorFlag = true;
+                    break;
+                }
+            }
+            if (!isVectorFlag) {
+                tangoHinshiSujoVector.append("0,");
+            }
+        }
+
+        // ベクトルを全てまとめる
+        StringBuilder allSujoVector = new StringBuilder();
+        allSujoVector.append(oneGramSujoVector);
+        allSujoVector.append(twoGramSujoVector);
+        allSujoVector.append(tangoHinshiSujoVector);
+
+        return allSujoVector.toString().split(",");
+	}
+	
+	/**
+	 * 素性ベクトルを返す
+	 * @param soseiVecterSakuseiMap
+	 * @param strNetInfo
+	 * @return
+	 * @throws Exception
+	 */
+	private String[] OLDgetSujoVector(LinkedHashMap<String,String[]> soseiVecterSakuseiMap, String strNetInfo)
 	        throws Exception {
         // この3行で解析できる
         StringTagger tagger = SenFactory.getStringTagger(null);
@@ -317,10 +422,11 @@ public class AnsGetDataUnit {
         StringBuilder allSujoVector = new StringBuilder();
         allSujoVector.append(oneGramSujoVector);
         allSujoVector.append(twoGramSujoVector);
-        allSujoVector.append(twoGramSujoVector);
+        allSujoVector.append(tangoHinshiSujoVector);
 
         return allSujoVector.toString().split(",");
 	}
+
 
 
     /**
@@ -337,10 +443,6 @@ public class AnsGetDataUnit {
         //配列をint型へ変換
         for(int ii = 0; ii < allSujoVector.length -1; ii++) {
             intSujoVector[ii] = Integer.valueOf(allSujoVector[ii]);
-        }
-
-        //配列をint型へ変換
-        for(int ii = 0; ii < allSujoVector.length -1; ii++) {
             intWeightParam[ii] = Integer.valueOf(weightParam[ii]);
         }
 

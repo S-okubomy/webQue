@@ -31,6 +31,12 @@ public class WebQAExeService {
         QueGetDataUnit queGetJitsuDate = new QueGetDataUnit();
         // 質問タイプ判定後の結果を取得（判定結果の降順に格納）
         List<AnsModelDto> queTypeList = queGetJitsuDate.getJitsuDate(question);
+        // 質問タイプリストサイズが0の場合はリターン
+       if (0 == queTypeList.size()) {
+    	   resultQAModelDto.setResultQueTypeList(new ArrayList<AnsModelDto>());
+    	   resultQAModelDto.setResultAnsList(new ArrayList<AnsModelDto>());
+    	   return resultQAModelDto;
+        }
         // 質問タイプ判定後の結果を上限件数分、格納
         List<AnsModelDto> resultQueTypeList = getResultQueList(queTypeList);
         // 最終結果（質問タイプリスト）を格納する。

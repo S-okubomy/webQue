@@ -3,6 +3,7 @@ package com.app.form;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -16,4 +17,6 @@ public class IndexForm {
 //    @NotNull
 //    @Size(min = 1, max = 127)
 //    private String lastName;
+    @Pattern(regexp="checked")
+    private String chkboxImg;
 }

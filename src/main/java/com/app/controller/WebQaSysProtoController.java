@@ -109,11 +109,14 @@ public class WebQaSysProtoController
         
         // 画像データを取得（API）
         List<PredictDto> imgSelectedList = new ArrayList<PredictDto>();
-        if (resultQADto.getResultAnsList() != null && 0 < resultQADto.getResultAnsList().size()) {
-            EinsVisonUnit einsVisonUnit = new EinsVisonUnit();
-            List<PredictDto> imgInfoList = einsVisonUnit.getPredictList(resultQADto.getResultAnsList()
-                    .get(0).getHtmlPath());
-            imgSelectedList = EinsVisonUnit.getSelectedImgList(imgInfoList);
+        // 画面の「代表画像」チェックボックスがチェックされていた場合は、代表画像を取得する。
+        if ("checked".equals(index.getChkboxImg())) {
+            if (resultQADto.getResultAnsList() != null && 0 < resultQADto.getResultAnsList().size()) {
+                EinsVisonUnit einsVisonUnit = new EinsVisonUnit();
+                List<PredictDto> imgInfoList = einsVisonUnit.getPredictList(resultQADto.getResultAnsList()
+                        .get(0).getHtmlPath());
+                imgSelectedList = EinsVisonUnit.getSelectedImgList(imgInfoList);
+            }
         }
         model.addAttribute("resultPicList", imgSelectedList);
         

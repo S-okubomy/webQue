@@ -16,7 +16,7 @@ public class AnsGetDataUnit {
     public List<AnsModelDto> getJitsuDate(String[] args, String queType) throws Exception {
         
         //データ取得先 URL指定
-        String reqUrl = "http://www.google.com/search?q=";
+        String reqUrl = "https://www.google.com/search?q=";
         String splitSerchWord = args[0];
         
         String reqUrlAll = reqUrl + splitSerchWord + "&ie=UTF-8&oe=UTF-8&num=20";

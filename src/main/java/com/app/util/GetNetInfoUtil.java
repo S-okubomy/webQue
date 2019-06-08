@@ -71,14 +71,17 @@ public class GetNetInfoUtil {
         List<String> studyHtmlList = new ArrayList<String>();
         try{
             Document document = Jsoup.connect(reqUrl)
-                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                     .get();
-            Elements elementPs = document.select(".r a");  // <h3 class="r">中の<a>要素を取得
+            Elements elementPs = document.select(".rc .r a");  // <h3 class="r">中の<a>要素を取得
             
             //受信したストリームから値を取り出す
             for (Element elementp : elementPs) {
-                if (!elementp.attr("href").contains("youtube")){
-                    studyHtmlList.add("http://google.com" + elementp.attr("href"));
+                if (!"".equals(elementp.attr("href")) && !"#".equals(elementp.attr("href"))
+                		&& elementp.attr("href").startsWith("http")
+                		&& !elementp.attr("href").contains("webcache")
+                		&& !elementp.attr("href").contains("youtube")){
+                    studyHtmlList.add(elementp.attr("href"));
                 }
             }
             
@@ -234,7 +237,9 @@ public class GetNetInfoUtil {
                         //URLにアクセス
                         
                         long start = System.currentTimeMillis();
-                        Document document = Jsoup.connect(studyHtml).get();
+                        Document document = Jsoup.connect(studyHtml)
+                        		.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                        		.get();
                         Elements elementP = document.select(jpSelecter);
                         long end = System.currentTimeMillis();
                         long interval = end - start;
@@ -276,6 +281,9 @@ public class GetNetInfoUtil {
                 } catch (IOException e){
                     e.printStackTrace();
                     System.out.println("1検索 失敗: " + e.getMessage());
+                } catch (Exception e){
+                    e.printStackTrace();
+                    System.out.println("その他: " + e.getMessage());
                 } 
             }
             Collections.sort(ansModelList, new SortAnsModelList());
@@ -283,7 +291,7 @@ public class GetNetInfoUtil {
             long endAns = System.currentTimeMillis();
             long intervalAns = endAns - startAns;
             System.out.println(intervalAns + "ミリ秒  Ans");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("全件 失敗: " + e.getMessage());
         } finally {

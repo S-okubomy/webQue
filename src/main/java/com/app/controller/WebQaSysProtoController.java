@@ -109,7 +109,7 @@ public class WebQaSysProtoController
         
         // 画像データを取得（API）
         List<PredictDto> imgSelectedList = new ArrayList<PredictDto>();
-        // 画面の「代表画像」チェックボックスがチェックされていた場合は、代表画像を取得する。
+        // 画面の「代表画像」チェックボックスがチェックされていた場合は、代表画像を取得。
         if ("checked".equals(index.getChkboxImg())) {
             if (resultQADto.getResultAnsList() != null && 0 < resultQADto.getResultAnsList().size()) {
                 EinsVisonUnit einsVisonUnit = new EinsVisonUnit();
@@ -376,7 +376,7 @@ public class WebQaSysProtoController
     }
     
     /**
-     * お金を稼ぐ方法を教えてください。
+     * お得情報を教えてください。
      * @throws Exception 
      */
     @RequestMapping(value = "/getMoney", method = RequestMethod.GET)
@@ -391,7 +391,7 @@ public class WebQaSysProtoController
         model.addAttribute("serverTime", fmtJpDate);
         
         String[] question = new String[1];
-        question[0] = "お金を稼ぐ方法";
+        question[0] = "お得情報を教えてください。";
         String independAnsKey = "getMoney";
         List<AnsModelDto> resultAnsList = webIndependExeService.getWebQA(question, independAnsKey)
                                               .getResultAnsList();

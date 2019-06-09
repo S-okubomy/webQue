@@ -38,7 +38,7 @@ public class IndependAnsGetDataUnit {
 	public static final String SEIKAI = "T";
 	public static final String FUSEIKAI = "F";
 	private static final int maxHtmlListSize = 15;
-	private static final int maxGetSentenceSize = 50;
+	private static final int maxGetSentenceSize = 30;
 	
 	private static final String HINSHI_REGEX = ".*名詞.*|動詞|.*助詞.*|未知語";
 

@@ -232,7 +232,7 @@ public class GetNetInfoUtil {
         List<AnsModelDto> ansModelList = new ArrayList<AnsModelDto>();
         try {
             int cntHtmlList = 0;
-            Pattern p = Pattern.compile("[。.]+");
+            Pattern p = Pattern.compile("[。.■・]+");
             for(String studyHtml : studyHtmlList) {
                 try{
                     matcherUrl = pUrl.matcher(studyHtml);

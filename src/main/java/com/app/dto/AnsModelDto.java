@@ -89,8 +89,10 @@ public class AnsModelDto implements Serializable {
         if (this==obj) return true;
 
         AnsModelDto other = (AnsModelDto)obj;
-        if(!ansSentence.equals(other.ansSentence)) return false;
-        if(ansSentence.equals(other.ansSentence)) return true;
+        if(!(ansSentence.replaceAll("　", "").replaceAll(" ", ""))
+        		.equals(other.ansSentence.replaceAll("　", "").replaceAll(" ", ""))) return false;
+        if(ansSentence.replaceAll("　", "").replaceAll(" ", "")
+        		.equals(other.ansSentence.replaceAll("　", "").replaceAll(" ", ""))) return true;
         
         return false;
     }
@@ -100,7 +102,7 @@ public class AnsModelDto implements Serializable {
         final int oddPrime = 31;
         int result = oddPrime;
         result *= oddPrime;
-        result += (ansSentence == null) ? 0 : ansSentence.hashCode();
+        result += (ansSentence == null) ? 0 : ansSentence.replaceAll("　", "").replaceAll(" ", "").hashCode();
         return result;
     }
 

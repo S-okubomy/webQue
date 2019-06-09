@@ -37,8 +37,8 @@ public class IndependAnsGetDataUnit {
 
 	public static final String SEIKAI = "T";
 	public static final String FUSEIKAI = "F";
-	private static final int maxHtmlListSize = 15;
-	private static final int maxGetSentenceSize = 30;
+	private static final int maxHtmlListSize = 5;
+	private static final int maxGetSentenceSize = 50;
 	
 	private static final String HINSHI_REGEX = ".*名詞.*|動詞|.*助詞.*|未知語";
 
@@ -103,7 +103,7 @@ public class IndependAnsGetDataUnit {
 
 		try{
             int cntHtmlList = 0;
-            Pattern p = Pattern.compile("[。.■]+");
+            Pattern p = Pattern.compile("[。.■・]+");
 			for(String studyHtml : studyHtmlList) {
 				matcherUrl = pUrl.matcher(studyHtml);
 				if (!matcherUrl.find()) {
@@ -113,7 +113,7 @@ public class IndependAnsGetDataUnit {
                  Document document = Jsoup.connect(studyHtml)
                      .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                      .get();
-					Elements elementP = document.select("Body div p"); // Bodyタグ中のdivタグ中のpタグ
+					Elements elementP = document.select("Body div p,a"); // Bodyタグ中のdivタグ中のpタグ
 					long end = System.currentTimeMillis();
 					long interval = end - start;
 					System.out.println(interval + "ミリ秒  Jsop");

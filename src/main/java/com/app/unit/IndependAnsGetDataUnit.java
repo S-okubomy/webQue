@@ -1,18 +1,17 @@
 package com.app.unit;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import net.java.sen.SenFactory;
 import net.java.sen.StringTagger;
@@ -23,8 +22,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import com.app.dto.AnsModelDto;
-import com.app.dto.InitDto;
 import com.app.dto.StudyModelDto;
+import com.app.util.GetMLerningUtil;
 import com.app.util.GetNetInfoUtil;
 import com.app.util.ReadFileUtil;
 import com.app.util.SelectWordUtil;
@@ -38,7 +37,8 @@ public class IndependAnsGetDataUnit {
 
 	public static final String SEIKAI = "T";
 	public static final String FUSEIKAI = "F";
-	private static final int maxHtmlListSize = 3;
+	private static final int maxHtmlListSize = 15;
+	private static final int maxGetSentenceSize = 50;
 	
 	private static final String HINSHI_REGEX = ".*名詞.*|動詞|.*助詞.*|未知語";
 
@@ -46,17 +46,16 @@ public class IndependAnsGetDataUnit {
 
 	    long startAns = System.currentTimeMillis();
 	    
-		//データ取得先 URL指定
-	    String reqUrl = "https://search.goo.ne.jp/web.jsp?MT=";
+        //データ取得先 URL指定
+        String reqUrl = "https://www.google.com/search?q=";
+        String splitSerchWord = args[0];
+        String reqUrlAll = reqUrl + splitSerchWord + "&ie=UTF-8&oe=UTF-8&num=20";
         
-	    String splitSerchWord = SelectWordUtil.getSplitWord(args[0]);
-	    
-        String reqUrlAll = reqUrl + splitSerchWord + "&mode=0&sbd=goo001&IE=UTF-8&OE=UTF-8";
         //学習先のHTMLリスト
         List<String> studyHtmlList = new ArrayList<String>();
         
         long startHtml = System.currentTimeMillis();
-        studyHtmlList = GetNetInfoUtil.getStudyHtmlList(reqUrlAll);
+        studyHtmlList = GetNetInfoUtil.getHtmlListForGoogle(reqUrlAll);
 
 		System.out.println("以下、検索元URL");
 		System.out.println(reqUrlAll);
@@ -110,9 +109,11 @@ public class IndependAnsGetDataUnit {
 				if (!matcherUrl.find()) {
 					//URLにアクセス
 				    
-				    long start = System.currentTimeMillis();
-					Document document = Jsoup.connect(studyHtml).get();
-					Elements elementP = document.select("p, b"); // pタグ又はbタグ
+				   long start = System.currentTimeMillis();
+                 Document document = Jsoup.connect(studyHtml)
+                     .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                     .get();
+					Elements elementP = document.select("Body div p"); // Bodyタグ中のdivタグ中のpタグ
 					long end = System.currentTimeMillis();
 					long interval = end - start;
 					System.out.println(interval + "ミリ秒  Jsop");
@@ -120,19 +121,20 @@ public class IndependAnsGetDataUnit {
 					
 					long start2 = System.currentTimeMillis();
 					String[] rsltNetInfo = p.split(elementP.text());
+                  System.out.println("デバッグ: " + studyHtml + "文節数: " + rsltNetInfo.length);  //デバッグ用
 					for (int iCount =0; iCount < rsltNetInfo.length; iCount++) {
-					    
-					 // TODO デバッグ
-//	                    if (rsltNetInfo[iCount].matches(".*稼ぐ方法.*")) {
-//	                        System.out.println(rsltNetInfo[iCount]);
-//	                    }
+						if (maxGetSentenceSize <= iCount) {
+						    break; // 最大読み込み数になったらブレーク
+						}
 					    
 					    // 正規表現でフィルター（文章の前後にスペースを含む行を除く    "^\\x01-\\x7E"で1バイト文字以外を探す）
 					    // 5文字以上、上記以外の文章を対象にする。
-					    if (5 <= rsltNetInfo[iCount].length() && !rsltNetInfo[iCount]
+					    if (10 <= rsltNetInfo[iCount].length() && !rsltNetInfo[iCount]
 					            .matches(".*([a-zA-Z0-9]|[^\\x01-\\x7E]).*\\ ([a-zA-Z0-9]|[^\\x01-\\x7E]).*")
 					            && !rsltNetInfo[iCount].matches(".*([a-zA-Z0-9/%\\-_:=?]{10,}).*")
 					            && !rsltNetInfo[iCount].matches(".*「追加する」ボタンを押してください.*")) {
+//                            sujoVector = GetMLerningUtil.getSujoVector(soseiVecterSakuseiMap
+//                                    , rsltNetInfo[iCount]);
                             sujoVector = getSujoVector(soseiVecterSakuseiMap, rsltNetInfo[iCount]);
                             // 振り分け結果を出力
                             outFuriwakeResult(sujoVector, weightValueMap, gaResultArray
@@ -149,6 +151,15 @@ public class IndependAnsGetDataUnit {
 				    break; // 最大検索サイト数以上になったらブレーク
 				}
 			}
+			
+			// 重複削除
+			Set<AnsModelDto> set = new HashSet<>(ansModelList);
+			ansModelList = new ArrayList<AnsModelDto>(set);
+           Collections.sort(ansModelList, new SortAnsModelList());
+           System.out.println("回答抽出完了");
+           long endAns = System.currentTimeMillis();
+           long intervalAns = endAns - startAns;
+            System.out.println(intervalAns + "ミリ秒  Ans");
 		} catch (IOException e){
 			e.printStackTrace();
 			System.out.println("ファイル書き込み失敗");
@@ -157,15 +168,6 @@ public class IndependAnsGetDataUnit {
 				// ストリームは必ず finally で close
 				if (newFileStream != null) {
 				    newFileStream.close();
-				    
-		            Collections.sort(ansModelList, new SortAnsModelList());
-					System.out.println("回答抽出完了");
-					
-			        long endAns = System.currentTimeMillis();
-			        long intervalAns = endAns - startAns;
-			        System.out.println(intervalAns + "ミリ秒  Ans");
-					
-					return ansModelList;
 				}
 			} catch (IOException e) {
 			}
@@ -201,11 +203,14 @@ public class IndependAnsGetDataUnit {
                 for(int ii = 0; ii < weightValueMap.get(key).length -1; ii++) {
                     weightValueMapArray[ii] = weightValueMap.get(key)[ii + 1];
                 }
-               
-                StudyModelDto studyModelDto = isFuriwake(sujoVector, weightValueMapArray
-                                               , Double.parseDouble(gaResultArray[3]));
+                StudyModelDto studyModelDto = GetMLerningUtil
+                    .isFuriwake(sujoVector, weightValueMapArray
+                        , Double.parseDouble(gaResultArray[3]));
+                
+//                StudyModelDto studyModelDto = isFuriwake(sujoVector, weightValueMapArray
+//                                               , Double.parseDouble(gaResultArray[3]));
                 if (SEIKAI.equals(studyModelDto.getHanteiJoho()) 
-                        && studyModelDto.getFxValue() > 5.0) {
+                        && studyModelDto.getFxValue() > 1.0) {
                     //ファイルへの書き込み
                     newFileStream.write(rsltSentence);
                     newFileStream.newLine();

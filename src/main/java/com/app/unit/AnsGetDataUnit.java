@@ -22,7 +22,7 @@ public class AnsGetDataUnit {
         String reqUrlAll = reqUrl + splitSerchWord + "&ie=UTF-8&oe=UTF-8&num=20";
         
         List<AnsModelDto> ansModelList = GetNetInfoUtil.getResultAns(args[0], queType
-                , reqUrlAll, "Body div p", 5);
+                , reqUrlAll, "Body div p", 7);
 
         return ansModelList;
     }

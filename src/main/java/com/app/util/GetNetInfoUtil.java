@@ -5,8 +5,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +27,7 @@ public class GetNetInfoUtil {
      */
     private GetNetInfoUtil() {}
 
+    private static final int maxGetSentenceSize = 30;
     
     /**
      * HTMLのURLリストを返す
@@ -248,7 +251,11 @@ public class GetNetInfoUtil {
                         
                         long start2 = System.currentTimeMillis();
                         String[] rsltNetInfo = p.split(elementP.text());
+                        System.out.println("デバッグ: " + studyHtml + "文節数: " + rsltNetInfo.length);  //デバッグ用
                         for (int iCount =0; iCount < rsltNetInfo.length; iCount++) {
+	    						if (maxGetSentenceSize <= iCount) {
+	    						    break; // 最大読み込み数になったらブレーク
+	    						}
                             // 正規表現でフィルター（文章の前後にスペースを含む行を除く    "^\\x01-\\x7E"で1バイト文字以外を探す）
                             // 5文字以上、上記以外の文章を対象にする。
                             if (15 <= rsltNetInfo[iCount].length() && rsltNetInfo[iCount].length() <= 150 
@@ -261,10 +268,6 @@ public class GetNetInfoUtil {
                                 GetMLerningUtil.outFuriwakeResult(sujoVector, weightValueMap, gaResultArray
                                         , rsltNetInfo[iCount], ansModelList, studyHtml, queType);
                             }
-// TODO 時間短縮 検討
-                            if (500 <= iCount -1) {
-                                break;
-                            }
                         }
                         cntHtmlList++;
                         
@@ -272,6 +275,7 @@ public class GetNetInfoUtil {
                         long interval2 = end2 - start2;
                         System.out.println(interval2 + "ミリ秒  振り分け");
                     }
+                    
                     if (maxHtmlListSize <= cntHtmlList) {
                         break; // 最大検索サイト数以上になったらブレーク
                     }
@@ -284,8 +288,12 @@ public class GetNetInfoUtil {
                 } catch (Exception e){
                     e.printStackTrace();
                     System.out.println("その他: " + e.getMessage());
-                } 
+                   } 
             }
+             
+             // 重複削除
+            Set<AnsModelDto> set = new HashSet<>(ansModelList);
+            ansModelList = new ArrayList<AnsModelDto>(set);
             Collections.sort(ansModelList, new SortAnsModelList());
             System.out.println("回答抽出完了");
             long endAns = System.currentTimeMillis();

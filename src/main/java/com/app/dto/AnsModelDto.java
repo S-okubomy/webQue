@@ -77,5 +77,31 @@ public class AnsModelDto implements Serializable {
     public String getHtmlPath() {
         return this.htmlPath;
     }
+    
+// Hash setでの重複判定のため、オーバライド
+// ※注意 ansSentenceのみ同じ内容であれば、同値と判定
+    @Override
+    public boolean equals(Object obj){
+
+        if (obj==null) return false;
+
+        if (! (obj instanceof AnsModelDto) ) return false;
+        if (this==obj) return true;
+
+        AnsModelDto other = (AnsModelDto)obj;
+        if(!ansSentence.equals(other.ansSentence)) return false;
+        if(ansSentence.equals(other.ansSentence)) return true;
+        
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        final int oddPrime = 31;
+        int result = oddPrime;
+        result *= oddPrime;
+        result += (ansSentence == null) ? 0 : ansSentence.hashCode();
+        return result;
+    }
 
 }

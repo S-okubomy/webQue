@@ -391,12 +391,12 @@ public class WebQaSysProtoController
         model.addAttribute("serverTime", fmtJpDate);
         
         String[] question = new String[1];
-        question[0] = "お得情報を教えてください。";
+        question[0] = "お金を稼ぐ";
         String independAnsKey = "getMoney";
         List<AnsModelDto> resultAnsList = webIndependExeService.getWebQA(question, independAnsKey)
                                               .getResultAnsList();
         model.addAttribute("resultAnsList", resultAnsList);
-        model.addAttribute("questionWeb", question[0]);
+        model.addAttribute("questionWeb", "お得情報を教えてください。");
 
         return "infopage1";
     }

@@ -78,7 +78,7 @@ public class InitDto implements Serializable {
     }
 
 	public void setWeightParam(int[] weightParam){
-        this.weightParam = weightParam;
+        InitDto.weightParam = weightParam;
     }
 
 
@@ -98,7 +98,7 @@ public class InitDto implements Serializable {
 	}
 
 	public int[] getWeightParam() {
-		return this.weightParam;
+		return InitDto.weightParam;
 	}
 
 

@@ -1,6 +1,36 @@
 # 質問に回答するWEBアプリ
+## 環境
+VSCode + Docker + java11 + Spring Boot + PostgreSQL
 
-## 詳細
+## 手順  
+
+### vscodeのRemote Containerでコンテナ起動する手順
+1. docker-compose.ymlのあるディレクトリ(~/webQue)をvscodeで開く
+2. コマンドパレットを表示: 「Ctrl + Shift + P」
+3. Remote Containers:Reopen in Containerを選択  
+[(参考リンク)](https://penpen-dev.com/blog/vscode-remote-container-toha/)
+
+### Spring Boot 起動方法
+1. 「実行とデバッグ」ビューで「Launch Current File」を選択
+2. 「WebQaSysProto1Application.java」を開く。
+3. 「Ctrl + F5」で実行
+4. ブラウザでアクセス: http://localhost:8081/webqa/index
+
+### vscodeのRemote Containerでコンテナ終了する手順
+1. コマンドパレットを表示: 「Ctrl + Shift + P」
+2. Remote Containers:Reopen Folder Locallyを選択
+
+### その他
+
+### dockerコマンドでコンテナ起動
+1. docker-compose up -d --build  
+2. docker-compose ps  
+
+### ボリュームマウントも削除する場合
+docker-compose down -v
+
+
+<!-- ## 詳細
 質問文を入力すると、質問に対する回答を自動で作成します。  
 質問文の解析及び回答作成のために機械学習を使用してます。  
 まず、質問文を入力すると、質問タイプに分類します。（what,why,how等）  
@@ -33,4 +63,4 @@
 処理がすごく遅く、よくリクエストタイムアウトになってしまいます。  
 時間の取れる日に直したい と思っています。        
 
-試作画面URL：[https://webque.herokuapp.com/webqa/index](https://webque.herokuapp.com/webqa/index)
+試作画面URL：[https://webque.herokuapp.com/webqa/index](https://webque.herokuapp.com/webqa/index) -->

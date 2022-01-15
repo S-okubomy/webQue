@@ -1,0 +1,94 @@
+version: '3'
+services:
+###########ここからAppサーバの設定###########
+  # app_webque_dev:
+  #   container_name: app_webque_dev
+  #   restart: always
+  #   # ビルドするdockerファイルが格納されたディレクトリ
+  #   build: ./app_webque
+  #   # サービス起動後に入力されるコマンドを設定
+  #   # command: python3 webQueApiRunServer.py
+  #   tty: true
+  #   volumes:
+  #     # マウントするディレクトリ
+  #     - ./app_webque:/webQueApi/app_webque
+  #   environment:
+  #     TZ: "Asia/Tokyo"
+  #     DATABASE_HOST: postgres
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: webque
+  #     POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
+  #   ports:
+  #     # ホスト側のポート：コンテナ側のポート
+  #     - 7017:7017
+  #   depends_on:
+  #     - postgres
+###########ここまでAppサーバの設定###########
+
+###########ここからDBサーバの設定###########
+  db:
+    # 公式からイメージをpull
+    image: postgres:latest
+    container_name: db_webque
+    restart: always
+    environment:
+      TZ: "Asia/Tokyo"
+      DATABASE_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pw_webque
+      POSTGRES_DB: webque
+      # POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8" #イメージが[postgres:latest]だと使えない
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    # ports:
+    #   # ホスト側のポート：コンテナ側のポート
+    #   - 5437:5432
+    volumes:
+      # データベースの永続化
+      # ホストのディレクトリにマウントしない様に、先頭に`./`をつけない
+      - postgres_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
+###########ここまでDBサーバの設定###########
+
+###########ここからjavaの設定###########
+  java:
+    image: openjdk:11
+    container_name: jdk_webque
+    restart: always
+    ports:
+      - 8888:7070 # ホストからデバッグできるようにポートフォーワード
+    tty: true
+    depends_on:
+        - db
+###########ここまでjavaの設定###########
+
+###########ここからWEBサーバの設定###########
+  # nginx:
+  #   build: ./web_nginx
+  #   volumes:
+  #     - ./web_nginx:/webQueApi/web_nginx
+  #   ports:
+  #     - 8888:8888
+  #   depends_on:
+  #     - app_webque_dev
+###########ここまでWEBサーバの設定###########
+
+###########ここからpgadmin4の設定###########
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   ports:
+  #     - 8080:80
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: XXXXXXX@gmail.com
+  #     PGADMIN_DEFAULT_PASSWORD: XXXXXXXX
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin
+  #   depends_on:
+  #     - postgres
+###########ここまでpgadmin4の設定###########
+
+###########トップレベルに書く「名前付きvolumes」は複数サービスから参照できる###########
+volumes:
+  postgres_data:
+  pgadmin:

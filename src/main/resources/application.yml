@@ -1,0 +1,18 @@
+# DB接続情報
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/webque
+    username: postgres
+    password: pw_webque
+    driverClassName: org.postgresql.Driver
+# SQLログ出力
+logging:
+  level:
+    org:
+      springframework: warn
+    com:
+      example:
+        demo:
+          UserDataMapper: debug
+# Beanオーバーライドを有効にする          
+spring.main.allow-bean-definition-overriding: true

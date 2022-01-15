@@ -1,0 +1,34 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch WebQaSysProto1Application",
+            "request": "launch",
+            "mainClass": "com.app.WebQaSysProto1Application",
+            "projectName": "workspace"
+        },
+        {
+            "type": "java",
+            "name": "Launch DemoApplication1",
+            "request": "launch",
+            "mainClass": "com.app.example.DemoApplication",
+            "projectName": "workspace"
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        }
+    ]
+}

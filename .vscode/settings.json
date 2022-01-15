@@ -1,0 +1,15 @@
+{
+    "java.configuration.updateBuildConfiguration": "disabled",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "db",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "db",
+            "database": "webque",
+            "username": "postgres",
+            "password": "pw_webque"
+        }
+    ]
+}

@@ -1,42 +1,42 @@
-package com.app.util.token.http;
+// package com.app.util.token.http;
 
-import com.app.util.token.representations.PredictResponse;
-import java.io.IOException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.glassfish.jersey.media.multipart.Boundary;
-import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+// import com.app.util.token.representations.PredictResponse;
+// import java.io.IOException;
+// import javax.ws.rs.client.Entity;
+// import javax.ws.rs.core.MediaType;
+// import javax.ws.rs.core.Response;
+// import org.glassfish.jersey.media.multipart.Boundary;
+// import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
-public class PredictRequest extends Request {
+// public class PredictRequest extends Request {
 
-  private final String modelId;
-  private final String sampleLocation;
+//   private final String modelId;
+//   private final String sampleLocation;
 
-  public PredictRequest(String token, String modelId, String sampleLocation) {
-    super(token);
-    this.modelId = modelId;
-    this.sampleLocation = sampleLocation;
-  }
+//   public PredictRequest(String token, String modelId, String sampleLocation) {
+//     super(token);
+//     this.modelId = modelId;
+//     this.sampleLocation = sampleLocation;
+//   }
 
-  public PredictResponse submit() throws IOException {
-    FormDataMultiPart formPart = new FormDataMultiPart();
-    formPart.field("modelId", modelId);
-    formPart.field("sampleLocation", sampleLocation);
+//   public PredictResponse submit() throws IOException {
+//     FormDataMultiPart formPart = new FormDataMultiPart();
+//     formPart.field("modelId", modelId);
+//     formPart.field("sampleLocation", sampleLocation);
 
-    MediaType contentType = formPart.getMediaType();
-    contentType = Boundary.addBoundary(contentType);
-    Entity<FormDataMultiPart> entity = Entity.entity(formPart, contentType);
+//     MediaType contentType = formPart.getMediaType();
+//     contentType = Boundary.addBoundary(contentType);
+//     Entity<FormDataMultiPart> entity = Entity.entity(formPart, contentType);
 
-    Response response = client.target(EINSTEIN_VISION_URL + "/v1/vision/predict")
-        .request()
-        .header("Authorization", "Bearer " + getToken())
-        .post(entity);
+//     Response response = client.target(EINSTEIN_VISION_URL + "/v1/vision/predict")
+//         .request()
+//         .header("Authorization", "Bearer " + getToken())
+//         .post(entity);
 
-    if (!isSuccessful(response)) {
-      throw new IOException("Error occurred while making prediction call " + response);
-    }
+//     if (!isSuccessful(response)) {
+//       throw new IOException("Error occurred while making prediction call " + response);
+//     }
 
-    return readResponseAs(response, PredictResponse.class);
-  }
-}
+//     return readResponseAs(response, PredictResponse.class);
+//   }
+// }

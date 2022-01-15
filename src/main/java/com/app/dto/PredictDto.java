@@ -1,39 +1,39 @@
-package com.app.dto;
+// package com.app.dto;
 
-import java.io.Serializable;
+// import java.io.Serializable;
 
-import com.winkelmeyer.salesforce.einsteinvision.model.PredictionResult;
+// import com.winkelmeyer.salesforce.einsteinvision.model.PredictionResult;
 
-public class PredictDto implements Serializable {
+// public class PredictDto implements Serializable {
 
-	/**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+// 	/**
+//      * 
+//      */
+//     private static final long serialVersionUID = 1L;
 
-    public PredictDto() {
-	}
+//     public PredictDto() {
+// 	}
 
-	/** 予測 */
-	private PredictionResult predictionResult;
+// 	/** 予測 */
+// 	private PredictionResult predictionResult;
 
-	/** url */
-	private String urlForImg;
+// 	/** url */
+// 	private String urlForImg;
 
-	public void setPredictionResult(PredictionResult predictionResult){
-        this.predictionResult = predictionResult;
-    }
+// 	public void setPredictionResult(PredictionResult predictionResult){
+//         this.predictionResult = predictionResult;
+//     }
 
-	public void setUrlForImg(String urlForImg){
-        this.urlForImg = urlForImg;
-    }
+// 	public void setUrlForImg(String urlForImg){
+//         this.urlForImg = urlForImg;
+//     }
 
-	public PredictionResult getPredictionResult() {
-		return this.predictionResult;
-	}
+// 	public PredictionResult getPredictionResult() {
+// 		return this.predictionResult;
+// 	}
 
-	public String getUrlForImg() {
-		return this.urlForImg;
-	}
+// 	public String getUrlForImg() {
+// 		return this.urlForImg;
+// 	}
 
-}
+// }

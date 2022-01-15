@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"></meta>
+    <meta name="keyword" content="今日のうんちく,今日のニュース,健康情報,お勧めの映画,お勧めのテレビ番組,人工知能,機械学習,質問応答システム,子犬が回答,"/>
+    <meta name="description" content="ネット上を自動で巡回し、今日のうんちく、ニュース、お勧めの映画などの情報を表示します。また、質問も入力すると
+          自動で回答文を作成します。質問文の解析及び回答作成のために機械学習を使用しています。"/>
+          
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <title>Web QA System</title>
+    <!-- BootstrapのCSS読み込み -->
+    <link href="/lib/css/bootstrap.min.css" rel="stylesheet"></link>
+    <!-- jQuery読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- BootstrapのJS読み込み -->
+    <script src="/lib/js/bootstrap.min.js"></script>
+    <!-- thymeleafの読み込み -->
+    
+    <style type="text/css">
+      <!--
+      .readUnderLine { border-style: none none solid solid; 
+                 border-color: -moz-use-text-color -moz-use-text-color -moz-use-text-color #3399cc; 
+                 border-width: medium medium 1px 5px;
+                 padding: 5px 10px; 
+                 margin-bottom: 1em; 
+                 background-color: transparent;
+  
+      }
+      a.ansHtmlPath {
+                        color: blue;
+                        text-decoration:underline; 
+      }
+      .container-fluid.jumbotron{
+        margin-top: 2px;
+        margin-bottom: 2px;
+      }
+      
+      .navbar-default {
+         margin-bottom: 2px;
+      }
+      
+      -->
+      
+    </style>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="/css/infopage1.css" type="text/css" />
+
+    <script>
+      //<![CDATA[
+         $(function(){
+           $("#header-outer").load("/common/header.html #header-inner");
+         })
+                 
+      //]]>
+     </script>
+    </head>
+    
+    <body>
+      <div id="header-outer">
+        <!--ここにヘッダーをインクルード-->
+      </div>
+        
+        <!-- 内容 ================================================== -->
+        <div class="container-fluid jumbotron">
+          <h1>みんなの質問に答えるわん！！！</h1>
+          <p>...</p>
+          
+            <!-- Forms ================================================== -->
+            <h3 class="readUnderLine">子犬の問答<br />
+            <small>ネット検索して回答パターンに一致する文字列を自動抽出するわん</small>
+            </h3>
+            
+        
+        <!--左からの吹き出し-->
+        <div class="kaiwa">
+         <figure class="kaiwa-img-left">
+           <img src="/img1/dog1.jpg" alt="dog1"/>
+         <figcaption class="kaiwa-img-description">質問するワン</figcaption>
+         </figure>
+         <div class="kaiwa-text-right">
+           <p class="kaiwa-text"><font size="3">質問があるわん。教えてわん。</font></p>
+           <p class="kaiwa-text"><font size="3" color="red"><strong th:text="${questionWeb}"></strong></font></p>
+         </div>
+        </div>
+        
+        <!--右からの吹き出し-->
+        <div class="kaiwa">
+         <figure class="kaiwa-img-right">
+           <img src="/img1/dog2.jpg" alt="dog2"/>
+         <figcaption class="kaiwa-img-description">回答するワン</figcaption>
+         </figure>
+         <div class="kaiwa-text-left">
+           <th:block th:if="${#lists.size(resultAnsList)}>0" >
+                <P class="kaiwa-text"><font size="3">インターネットで調べたら下記の回答見つかったわん</font></P>
+                <P th:each="resultAns : ${resultAnsList}" class="kaiwa-text"><font size="3">「
+                    <a class="ansHtmlPath" href="" th:href="@{${resultAns.htmlPath}}" target="_blank"
+                          th:text="${resultAns.ansSentence}">NODATA</a>」が見つかったわん
+                </font></P>
+                <P class="kaiwa-text"><font size="3">青い文字クリックすると掲載ページ見れるよ。</font></P>
+           </th:block>
+           
+           <th:block th:unless="${#lists.size(resultAnsList)}>0" >
+                <P class="kaiwa-text"><font size="3">インターネットで調べたんだけど、回答見つからなかったわん！！</font></P>
+                <P class="kaiwa-text"><font size="3">ごめんわん。サーバー混雑してるかもしれないから後で試してみて。</font></P>
+           </th:block>
+
+         </div>
+        </div>
+            
+            
+        </div>
+        
+<!-- 広告用 -->
+        <a href="https://px.a8.net/svt/ejp?a8mat=2C0EMO+8EG8UY+50+2HK0TD" target="_blank" rel="nofollow">
+        <img border="0" width="350" height="80" alt="" src="https://www22.a8.net/svt/bgt?aid=141106704508&amp;wid=002&amp;eno=01&amp;mid=s00000000018015042000&amp;mc=1"></img></a>
+        <img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=2C0EMO+8EG8UY+50+2HK0TD" alt=""></img>
+        
+        <!-- プログレスバーを表示するモーダル -->
+        <div class="modal fade" id="modal_box" data-target="#modal_box" data-backdrop="static">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title"> 回答作成中です。しばらくお待ちください。。。</h4>
+              </div>
+              <div class="modal-body">
+                <div class="progress progress-striped active">
+                  <div class="progress-bar progress-bar-info" id="pgss1"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+    </body>
+</html>

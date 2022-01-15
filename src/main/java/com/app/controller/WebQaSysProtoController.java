@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,13 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.app.dto.AnsModelDto;
-import com.app.dto.PredictDto;
+// import com.app.dto.PredictDto;
 import com.app.dto.ResultQAModelDto;
 import com.app.form.IndexForm;
 import com.app.service.CreateInfoService;
 import com.app.service.WebIndependExeService;
 import com.app.service.WebQAExeService;
-import com.app.unit.EinsVisonUnit;
+// import com.app.unit.EinsVisonUnit;
 
 @Controller
 @EnableAutoConfiguration
@@ -107,18 +106,18 @@ public class WebQaSysProtoController
         ResultQAModelDto resultQADto = webQAExeService.getWebQA(question);
         model.addAttribute("resultQADto", resultQADto);
         
-        // 画像データを取得（API）
-        List<PredictDto> imgSelectedList = new ArrayList<PredictDto>();
-        // 画面の「代表画像」チェックボックスがチェックされていた場合は、代表画像を取得。
-        if ("checked".equals(index.getChkboxImg())) {
-            if (resultQADto.getResultAnsList() != null && 0 < resultQADto.getResultAnsList().size()) {
-                EinsVisonUnit einsVisonUnit = new EinsVisonUnit();
-                List<PredictDto> imgInfoList = einsVisonUnit.getPredictList(resultQADto.getResultAnsList()
-                        .get(0).getHtmlPath());
-                imgSelectedList = EinsVisonUnit.getSelectedImgList(imgInfoList);
-            }
-        }
-        model.addAttribute("resultPicList", imgSelectedList);
+        // 画像データを取得（API） → 廃止
+        // List<PredictDto> imgSelectedList = new ArrayList<PredictDto>();
+        // // 画面の「代表画像」チェックボックスがチェックされていた場合は、代表画像を取得。
+        // if ("checked".equals(index.getChkboxImg())) {
+        //     if (resultQADto.getResultAnsList() != null && 0 < resultQADto.getResultAnsList().size()) {
+        //         EinsVisonUnit einsVisonUnit = new EinsVisonUnit();
+        //         List<PredictDto> imgInfoList = einsVisonUnit.getPredictList(resultQADto.getResultAnsList()
+        //                 .get(0).getHtmlPath());
+        //         imgSelectedList = EinsVisonUnit.getSelectedImgList(imgInfoList);
+        //     }
+        // }
+        // model.addAttribute("resultPicList", imgSelectedList);
         
         Date date = new Date();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);

@@ -12,7 +12,7 @@ VSCode + Docker + java11 + Spring Boot + PostgreSQL
 
 ### Spring Boot 起動方法
 1. 「実行とデバッグ」ビューで「Launch Current File」を選択
-2. 「WebQaSysProto1Application.java」を開く。
+2. 「WebQaSysProto1Application.java」を開く。又は「testExe1.java」を開く
 3. 「Ctrl + F5」で実行
 4. ブラウザでアクセス: http://localhost:8081/webqa/index
 

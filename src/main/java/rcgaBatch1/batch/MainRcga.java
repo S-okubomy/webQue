@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 
+import interfaceEva.BaseEvaVal;
 import net.bytebuddy.build.Plugin.Engine.ErrorHandler.Failing;
 import rcgaBatch1.dto.CalFitDto;
 import rcgaBatch1.dto.CalProbaDto;
@@ -20,15 +21,18 @@ import util.GetHinshiUtil;
  */
 public class MainRcga {
 
-	private static final int mSedai = InitDto.calSedai; //繰り返し世代数
-	private static final String PATH_SP = File.separator;
-
-	public ResultGeneDto calGene(String evaluationClsName) {
+	public ResultGeneDto calGene(String evaluationClsName, BaseEvaVal gaPramInit) {
 
 	    // 最適化の結果返却用
         ResultGeneDto resultGeneDto = new ResultGeneDto();
 	    
 		try{
+			// GAパラメータをセットする
+			gaPramInit.setNN();
+			gaPramInit.setCalSedai();
+			gaPramInit.setRangeMin();
+			gaPramInit.setRangeMax();
+
 			// Projectのトップディレクトリパス取得
 			String folderName = System.getProperty("user.dir");
 			// トップディレクトリパス以降を設定
@@ -106,6 +110,7 @@ public class MainRcga {
 			int LGenMax1 = 0;
 			int fitMaxNumGen1 = 0;
 
+			final int mSedai = InitDto.calSedai; //繰り返し世代数
 			for(int L = 0; L < mSedai; L++){
 
 				/* 選択確率を計算する */
@@ -212,6 +217,10 @@ public class MainRcga {
 			resultGeneDto.setFit1(fitMaxNumGen1);
     	    resultGeneDto.setTrueVal1(truvalGenMax1);
     	    resultGeneDto.setAc1(acGenMax1);
+
+			// 最後に適応度が最大のものをもう一回実行（表示したいため）
+			System.out.println("適応度が最大のもの!!!!!");
+			calFit.getEvaValue(evaluationClsName, resultGeneDto.getAc1());
 			
 		} catch (Exception e) {
 		    System.out.println(e.getMessage());

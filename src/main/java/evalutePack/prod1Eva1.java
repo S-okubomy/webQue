@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import interfaceEva.BaseEvaVal;
+import rcgaBatch1.dto.InitDto;
 
 
 /**
@@ -14,6 +15,26 @@ import interfaceEva.BaseEvaVal;
  *
  */
 public class prod1Eva1 implements BaseEvaVal{
+
+    @Override
+    public void setNN() {
+        InitDto.setNN(100);
+    }
+
+    @Override
+    public void setCalSedai() {
+        InitDto.setCalSedai(7777);
+    }
+
+    @Override
+    public void setRangeMin(){
+        InitDto.setRangeMinAndLen(new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}); // 各変数の最小値
+    }
+
+    @Override
+    public void setRangeMax() {
+        InitDto.setRangeMax(new double[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}); // 各変数の最大値
+    }
 
     
     /* (非 Javadoc)
@@ -52,6 +73,14 @@ public class prod1Eva1 implements BaseEvaVal{
         
         if (gaParameter[7] > 0.5) {
             gp1 [7] = "熱い";
+        }
+
+        if (gaParameter[8] > 0.5) {
+            gp1 [8] = "電車座れる";
+        }
+
+        if (gaParameter[9] > 0.5) {
+            gp1 [9] = "目覚めが良い";
         }
         
         
@@ -104,6 +133,13 @@ public class prod1Eva1 implements BaseEvaVal{
                 if ("満員電車".equals(gp1[2])) {
                     evaValue = evaValue - 3.0;
                     ansList.add(gp1[2]);
+                } else if ("電車座れる".equals(gp1[8])) {
+                    evaValue = evaValue + 3.0;
+                    ansList.add(gp1[8]);
+                    if ("目覚めが良い".equals(gp1[9])) {
+                        evaValue = evaValue + 2.0;
+                        ansList.add(gp1[9]);
+                    }
                 }
             } else if ("寒い".equals(gp1[6])) {
                 evaValue = evaValue - 2.0;
@@ -111,6 +147,10 @@ public class prod1Eva1 implements BaseEvaVal{
                 if ("満員電車".equals(gp1[2])) {
                     evaValue = evaValue - 1.0;
                     ansList.add(gp1[2]);
+                }
+                if ("目覚めが良い".equals(gp1[9])) {
+                    evaValue = evaValue + 5.0;
+                    ansList.add(gp1[9]);
                 }
             } else if ("熱い".equals(gp1[7])) {
                 evaValue = evaValue - 4.0;

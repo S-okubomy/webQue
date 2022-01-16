@@ -10,6 +10,11 @@ package interfaceEva;
  */
 public interface BaseEvaVal {
     
-    double execute(double[] gaParamet);
+    void setNN(); // 個体数のセット
+    void setCalSedai(); // 計算世代数
+    void setRangeMin();  // 各変数の最小値
+    void setRangeMax();  // 各変数の最大値
+
+    double execute(double[] gaParamet); // 実行クラス
     
 }

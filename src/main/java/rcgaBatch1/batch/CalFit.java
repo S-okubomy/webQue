@@ -53,7 +53,7 @@ public class CalFit {
 		return calFitDto;
 	}
 
-	private double getEvaValue(String evaluationClsName, double[] gaParameter) throws Exception {
+	public double getEvaValue(String evaluationClsName, double[] gaParameter) throws Exception {
 		
 		double evaValue = 0;
 		try {

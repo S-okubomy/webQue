@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 
 import interfaceEva.BaseEvaVal;
 import util.ReadFileUtil;
-
+import rcgaBatch1.dto.InitDto;
 
 /**
  * @author Administrator
@@ -20,6 +20,26 @@ public class SvmEvaClass implements BaseEvaVal{
 
     public static final String SEIKAI = "T";
     public static final String FUSEIKAI = "F";
+
+    @Override
+    public void setNN() {
+        InitDto.setNN(50);
+    }
+
+    @Override
+    public void setCalSedai() {
+        InitDto.setCalSedai(100);
+    }
+
+    @Override
+    public void setRangeMin(){
+        InitDto.setRangeMinAndLen(new double[]{-5, -2}); // 各変数の最小値
+    }
+
+    @Override
+    public void setRangeMax() {
+        InitDto.setRangeMax(new double[]{10, 2}); // 各変数の最大値
+    }
     
     /* (非 Javadoc)
      * @see interfaceEva.BaseEvaVal#execute(double)

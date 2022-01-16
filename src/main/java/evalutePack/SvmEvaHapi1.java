@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 
 import interfaceEva.BaseEvaVal;
+import rcgaBatch1.dto.InitDto;
 import util.ReadFileUtil;
 
 
@@ -20,6 +21,26 @@ public class SvmEvaHapi1 implements BaseEvaVal{
 
     public static final String SEIKAI = "T";
     public static final String FUSEIKAI = "F";
+
+    @Override
+    public void setNN() {
+        InitDto.setNN(100);
+    }
+
+    @Override
+    public void setCalSedai() {
+        InitDto.setCalSedai(777);
+    }
+
+    @Override
+    public void setRangeMin(){
+        InitDto.setRangeMinAndLen(new double[]{-5, -2}); // 各変数の最小値
+    }
+
+    @Override
+    public void setRangeMax() {
+        InitDto.setRangeMax(new double[]{10, 2}); // 各変数の最大値
+    }
     
     /* (非 Javadoc)
      * @see interfaceEva.BaseEvaVal#execute(double)

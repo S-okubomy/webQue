@@ -9,35 +9,22 @@ import java.io.Serializable;
  * @author t_okubomy
  */
 public class InitDto implements Serializable {
-
-//	public static final double minA0=-2.0,maxA0=2.0;   //σの係数の範囲
-//	public static final double minA1=-2.0,maxA1=2.0;   //期間の範囲
-//	public static final double minA2=-2.0,maxA2=2.0;  //avaの係数
-//	public static final double minA3=-2.0,maxA3=2.0;  //全体へｎの係数
-
-//    // 変数の最小値
-//	public static final double[] minA 
-//	   = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-//	
-//	// 変数の最大値
-//	public static final double[] maxA 
-//       = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
     
     // 変数の最小値
-    public static final double[] minA 
-    //    = {-700.0,}; // 問題によって次元違う!!!!!!!!!!!!
-	   = {-3, -4};
+    public static double[] minA;
     // 変数の最大値
-    public static final double[] maxA 
-    //    = {300.0};  // 問題によって次元違う!!!!!!!!!!!!
-	   = {2, 4};
+    public static double[] maxA;
+	//染色体の数
+	public static int nn;
+	//個体数
+	public static int NN;
+	//計算世代数
+	public static int calSedai; 
 
-	public static final int NN =100;                        //個体数
 	public static final int calKabuNo = 50;                 //指定の株コードまで調整すること
-	public static final int buyDay = 30;                    //売買期間 日
-	public static final int calSedai = 5000;                     //計算世代数
+	public static final int buyDay = 30;                    //売買期間 日                    
 	public static final String keisanKabuCode = "3250";    //計算世代数
-	public static final int nn = minA.length;               //染色体の数
+	// public static final int nn = minA.length;               //染色体の数
 	
 
 	/** x1[][]:染色体 */
@@ -55,13 +42,30 @@ public class InitDto implements Serializable {
 	public InitDto() {
 	}
 
-//	/** 1件分の支店コードと支店名を初期値として代入するコンストラクタ */
-//	public LnitData(String branchCode, String branchName ,int branchAmount) {
-//		this.branchCode = branchCode;
-//		this.branchName=branchName;
-//		this.branchAmount=branchAmount;
-//
-//	}
+    public static void setRangeMinAndLen(double[] minA) {
+		InitDto.nn = minA.length;
+        InitDto.minA = minA;
+    }
+
+    public static double[] getRangeMin() {
+        return InitDto.minA;
+    }
+
+    public static void setRangeMax(double[] maxA) {
+        InitDto.maxA = maxA;
+    }
+
+    public static double[] getRangeMax() {
+        return InitDto.maxA;
+    }
+
+    public static void setNN(int NN) {
+        InitDto.NN = NN;
+    }
+
+	public static void setCalSedai(int calSedai) {
+        InitDto.calSedai = calSedai;
+    }
 
 	public void setX1(double[][] x1){
 		InitDto.x1 = x1;

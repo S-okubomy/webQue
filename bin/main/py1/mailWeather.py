@@ -27,7 +27,7 @@ def sendGmail(tenkiMoji):
 # メインメソッド。
 
 LOCATION = 'Tokyo,jp' # 場所を設定してください
-APPID='de8940f9f25cc75800cd17380cd25ef8' # openweathermap のAPIキーを設定してください
+APPID='# openweathermap のAPIキーを設定してください' # openweathermap のAPIキーを設定してください
 
 # 天気のデータを取得する
 url ='http://api.openweathermap.org/data/2.5/forecast?q={}&cnt=10&appid={}'.format(LOCATION, APPID)
